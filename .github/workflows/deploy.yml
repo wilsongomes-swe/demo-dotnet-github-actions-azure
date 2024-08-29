@@ -1,0 +1,47 @@
+name: Dev & Prod Deployment
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  code_build_and_tests:
+    runs-on: ubuntu-latest
+    name: Code Build and Tests
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Run tests
+      run: dotnet test --configuration release
+
+  build_image:
+    name: Build Image and Push to ACR
+    needs: [code_build_and_tests]
+    runs-on: ubuntu-latest
+    env:
+      APP_FOLDER: HelloWorldApi
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Docker Login
+      uses: Azure/docker-login@v1
+      with:
+        login-server: ${{ env.ACR_SERVER }}
+        username: ${{ env.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
+
+    - name: Build and Push in Azure ACR
+      run: |
+        docker build . --file ./${{ env.APP_FOLDER }}/Dockerfile --tag ${{ env.ACR_IMAGE_NAME }}:$GITHUB_RUN_NUMBER
+        docker tag ${{ env.ACR_IMAGE_NAME }}:$GITHUB_RUN_NUMBER ${{ env.ACR_IMAGE_NAME }}:latest
+        docker push ${{ env.ACR_IMAGE_NAME }}:$GITHUB_RUN_NUMBER
+        docker push ${{ env.ACR_IMAGE_NAME }}
