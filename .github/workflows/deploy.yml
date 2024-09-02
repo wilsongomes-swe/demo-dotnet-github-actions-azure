@@ -54,6 +54,7 @@ jobs:
     needs: [ build_image ]
     env:
       WEB_APP:  ${{ vars.AZURE_WEBAPP_NAME }}
+      IMAGE_NAME: "${{ vars.ACR_SERVER }}/${{ vars.ACR_IMAGE_NAME }}"
 
     steps:
       - name: Azure login
@@ -73,6 +74,7 @@ jobs:
     needs: [ development_deploy ]
     env:
       WEB_APP: ${{ vars.AZURE_WEBAPP_NAME }}
+      IMAGE_NAME: "${{ vars.ACR_SERVER }}/${{ vars.ACR_IMAGE_NAME }}"
 
     steps:
       - name: Azure login
