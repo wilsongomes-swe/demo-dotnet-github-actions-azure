@@ -65,7 +65,7 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.WEB_APP }}
-          images: ${{ secrets.IMAGE_NAME }}:latest
+          images: ${{ env.IMAGE_NAME }}:latest
 
   production_deploy:
     name: 'Production Deployment'
@@ -85,4 +85,4 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.WEB_APP }}
-          images: ${{ secrets.IMAGE_NAME }}:latest
+          images: ${{ env.IMAGE_NAME }}:latest
