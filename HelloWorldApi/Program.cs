@@ -6,9 +6,9 @@ app.UseSwagger().UseSwaggerUI();
 app.UseHttpsRedirection();
 
 app.MapGet("/", () => new InfoResponse(
-    Version: "1.0.0",
+    Version: "1.0.1",
     Timestamp: DateTime.UtcNow,
-    Message: "Hello World",
+    Message: "Hello World!!",
     HostName: Environment.MachineName,
     EnvironmentName: app.Environment.EnvironmentName));
 
