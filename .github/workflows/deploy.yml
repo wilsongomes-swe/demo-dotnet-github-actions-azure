@@ -46,3 +46,39 @@ jobs:
         docker tag ${{ env.IMAGE_NAME }}:$GITHUB_RUN_NUMBER ${{ env.IMAGE_NAME }}:latest
         docker push ${{ env.IMAGE_NAME }}:$GITHUB_RUN_NUMBER
         docker push ${{ env.IMAGE_NAME }}
+
+  staging_deploy:
+    name: Staging Deployment
+    runs-on: ubuntu-latest
+    needs: [ build_image ]
+    env:
+      WEB_APP: staginglab
+
+    steps:
+      - name: Azure login
+        uses: Azure/login@v1.1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Web App Deployment
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.WEB_APP }}
+          images: ${{ secrets.IMAGE_NAME }}:latest
+
+  production_deploy:
+    name: 'Production Deployment'
+    runs-on: ubuntu-latest
+    needs: [ staging_deploy ]
+    env:
+      WEB_APP: productionlab
+
+    steps:
+      - name: Azure login
+        uses: Azure/login@v1.1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Web App Deployment
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.WEB_APP }}
+          images: ${{ secrets.IMAGE_NAME }}:latest
