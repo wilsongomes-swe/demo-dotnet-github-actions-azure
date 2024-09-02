@@ -13,4 +13,4 @@ app.MapGet("/", () => new InfoResponse(
 
 app.Run();
 
-record InfoResponse(string Version, DateTime Timestamp, string Message, string HostName, string EnvironmentName);
+record InfoResponse(string Version, DateTime Timestamp, string Message, string HostName);
